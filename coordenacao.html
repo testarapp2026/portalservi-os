@@ -1,0 +1,1677 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FIDAL Partners — Centro de Coordenação</title>
+<style>
+  /* =======================================================================
+     IDENTIDADE VISUAL — herdada 1:1 do Portal de Serviços FIDAL Partners
+     (mesmos tokens, tipografia, sombras e componentes do index.html público)
+     ======================================================================= */
+  :root{
+    --bg:#1a1f27;
+    --bg-2:#151a21;
+    --card:#232a35;
+    --card-2:#28313e;
+    --field:#1e242d;
+    --field-focus:#222b36;
+    --border:#333d4b;
+    --border-hover:#44526580;
+    --blue:#5b8ac4;
+    --blue-bright:#7aa6db;
+    --blue-glow:rgba(91,138,196,.16);
+    --gold:#c6a25f;
+    --gold-bright:#d8b877;
+    --gold-glow:rgba(198,162,95,.16);
+    --green:#5bbd8a;
+    --amber:#c9a24b;
+    --text:#eef2f7;
+    --text-soft:#aab4c2;
+    --text-dim:#7c8798;
+    --shadow:0 1px 2px rgba(0,0,0,.30), 0 18px 40px -18px rgba(0,0,0,.65);
+    --shadow-hover:0 2px 6px rgba(0,0,0,.35), 0 30px 60px -20px rgba(0,0,0,.8);
+    --content-max:1080px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+    color:var(--text);
+    background:
+      radial-gradient(1100px 520px at 50% -8%, #232c39 0%, var(--bg) 58%),
+      var(--bg);
+    min-height:100vh;
+  }
+  a{color:inherit;text-decoration:none}
+  ::selection{background:var(--gold-glow)}
+
+  /* =================== CABEÇALHO (appbar, não sidebar) =================== */
+  .appbar{
+    position:sticky; top:0; z-index:20;
+    display:flex; align-items:center; gap:16px;
+    padding:14px 24px;
+    background:rgba(21,26,33,.86); backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--border);
+  }
+  .appbar .logo{ height:34px; width:auto; display:block; flex-shrink:0; }
+  .appbar .sep{ width:1px; height:26px; background:var(--border); flex-shrink:0; }
+  .appbar .app-name{ font-size:.98rem; font-weight:600; letter-spacing:.2px; color:var(--text); white-space:nowrap; }
+  .appbar .spacer{ flex:1; }
+  .who{ display:flex; align-items:center; gap:10px; }
+  .who .avatar{
+    width:34px; height:34px; border-radius:50%; flex-shrink:0;
+    background:var(--gold-glow); border:1px solid #4a4030; color:var(--gold-bright);
+    display:flex; align-items:center; justify-content:center; font-size:.82rem; font-weight:700; letter-spacing:.5px;
+  }
+  .who .meta{ line-height:1.2; text-align:right; }
+  .who .meta .name{ font-size:.84rem; font-weight:600; color:var(--text); }
+  .who .meta .role{ font-size:.72rem; color:var(--text-dim); }
+  .btn{
+    font-family:inherit; font-size:.84rem; font-weight:600; letter-spacing:.3px;
+    cursor:pointer; border-radius:10px; padding:9px 15px; border:1px solid transparent;
+    display:inline-flex; align-items:center; gap:8px;
+    transition:transform .15s, box-shadow .15s, background .15s, color .15s, border-color .15s;
+  }
+  .btn svg{ width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .btn-primary{ background:linear-gradient(var(--blue-bright),var(--blue)); color:#0f1620; }
+  .btn-primary:hover{ transform:translateY(-2px); box-shadow:0 12px 24px -10px rgba(91,138,196,.7); }
+  .btn-gold{ background:linear-gradient(var(--gold-bright),var(--gold)); color:#1c150a; }
+  .btn-gold:hover{ transform:translateY(-2px); box-shadow:0 12px 24px -10px rgba(198,162,95,.6); }
+  .btn-green{ background:linear-gradient(#78d3a6,var(--green)); color:#08160f; }
+  .btn-green:hover{ transform:translateY(-2px); box-shadow:0 12px 24px -10px rgba(91,189,138,.6); }
+  .btn-ghost{ background:transparent; color:var(--text-soft); border-color:var(--border); }
+  .btn-ghost:hover{ color:var(--text); border-color:var(--border-hover); background:var(--card); }
+
+  /* =================== LAYOUT =================== */
+  .wrap{ width:100%; max-width:var(--content-max); margin:0 auto; padding:30px 24px 64px; }
+  .page-head h1{ font-size:1.5rem; font-weight:600; letter-spacing:.3px; }
+  .page-head p{ margin-top:6px; font-size:.92rem; color:var(--text-soft); }
+  .accent{ width:46px; height:3px; margin:14px 0 0; border-radius:2px;
+           background:linear-gradient(90deg,var(--blue),var(--gold)); opacity:.9; }
+
+  /* =================== CARTÕES DE RESUMO (versão compacta do .card) =================== */
+  .summary{ margin-top:26px; display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+  .stat{
+    position:relative; overflow:hidden;
+    background:linear-gradient(160deg,var(--card-2),var(--card));
+    border:1px solid var(--border); border-radius:15px; padding:18px 18px;
+    box-shadow:var(--shadow); display:flex; align-items:center; gap:14px;
+  }
+  .stat::before{ content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--blue); }
+  .stat[data-tone="novo"]::before{ background:linear-gradient(var(--blue-bright),var(--blue)); }
+  .stat[data-tone="proc"]::before{ background:linear-gradient(var(--gold-bright),var(--gold)); }
+  .stat[data-tone="done"]::before{ background:linear-gradient(#78d3a6,var(--green)); }
+  .stat[data-tone="total"]::before{ background:linear-gradient(var(--text-soft),var(--text-dim)); }
+  .stat .s-icon{
+    width:42px; height:42px; border-radius:11px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--blue-glow); border:1px solid #3a4a63; color:var(--blue-bright);
+  }
+  .stat[data-tone="proc"] .s-icon{ background:var(--gold-glow); border-color:#4a4030; color:var(--gold-bright); }
+  .stat[data-tone="done"] .s-icon{ background:rgba(91,189,138,.14); border-color:rgba(91,189,138,.4); color:var(--green); }
+  .stat[data-tone="total"] .s-icon{ background:rgba(122,135,152,.14); border-color:#3d4654; color:var(--text-soft); }
+  .stat .s-icon svg{ width:21px; height:21px; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .stat .s-val{ font-size:1.5rem; font-weight:700; line-height:1; color:var(--text); }
+  .stat .s-lbl{ margin-top:5px; font-size:.76rem; font-weight:600; letter-spacing:.4px; text-transform:uppercase; color:var(--text-dim); }
+
+  /* =================== SEPARADORES (.seg, ativo a dourado) =================== */
+  .toolbar{ margin-top:28px; display:flex; flex-wrap:wrap; gap:14px; align-items:center; justify-content:space-between; }
+  .seg{ display:inline-flex; gap:8px; background:var(--bg-2); border:1px solid var(--border); border-radius:12px; padding:5px; }
+  .seg input{ position:absolute; opacity:0; pointer-events:none; }
+  .seg label{
+    cursor:pointer; user-select:none; padding:9px 16px; border-radius:9px;
+    font-weight:600; font-size:.86rem; color:var(--text-soft);
+    border:1px solid transparent; transition:all .15s; white-space:nowrap;
+  }
+  .seg label:hover{ color:var(--text); }
+  .seg input:checked + label{
+    color:#1c150a; background:linear-gradient(var(--gold-bright),var(--gold));
+    box-shadow:0 8px 20px -10px rgba(198,162,95,.7);
+  }
+  .seg .count{ font-size:.74rem; opacity:.7; margin-left:6px; }
+
+  /* =================== FILTROS =================== */
+  .filters-toggle{ display:none; }
+  .filters{
+    margin-top:16px; background:linear-gradient(160deg,var(--card-2),var(--card));
+    border:1px solid var(--border); border-radius:14px; padding:16px 18px; box-shadow:var(--shadow);
+    display:grid; grid-template-columns:2fr 1fr 1fr 1.4fr auto; gap:12px 14px; align-items:end;
+  }
+  .ffield{ display:flex; flex-direction:column; gap:6px; min-width:0; }
+  .ffield label{ font-size:.74rem; font-weight:600; letter-spacing:.3px; color:var(--text-dim); text-transform:uppercase; }
+  .ffield.dates{ display:flex; flex-direction:row; gap:8px; align-items:end; }
+  .ffield.dates .fsub{ display:flex; flex-direction:column; gap:6px; flex:1; min-width:0; }
+  input, select, textarea{
+    font-family:inherit; font-size:.9rem; color:var(--text);
+    background:var(--field); border:1px solid var(--border); border-radius:10px;
+    padding:10px 12px; width:100%; transition:border-color .15s, background .15s, box-shadow .15s;
+  }
+  input::placeholder, textarea::placeholder{ color:var(--text-dim); }
+  input:focus, select:focus, textarea:focus{ outline:none; border-color:var(--blue); background:var(--field-focus); box-shadow:0 0 0 3px var(--blue-glow); }
+  input[type="date"]{ color-scheme:dark; }
+  select{ cursor:pointer; }
+  .search-wrap{ position:relative; }
+  .search-wrap svg{ position:absolute; left:12px; top:50%; transform:translateY(-50%); width:16px; height:16px; stroke:var(--text-dim); fill:none; stroke-width:2; pointer-events:none; }
+  .search-wrap input{ padding-left:36px; }
+
+  /* =================== TABELA (desktop) =================== */
+  .list-panel{ margin-top:20px; }
+  .table-scroll{ overflow-x:auto; border:1px solid var(--border); border-radius:14px; background:linear-gradient(160deg,var(--card-2),var(--card)); box-shadow:var(--shadow); }
+  table.data{ width:100%; border-collapse:collapse; min-width:860px; }
+  table.data thead th{
+    text-align:left; font-size:.72rem; font-weight:700; letter-spacing:.6px; text-transform:uppercase;
+    color:var(--text-dim); padding:14px 16px; border-bottom:1px solid var(--border); white-space:nowrap;
+  }
+  table.data tbody td{ padding:13px 16px; border-bottom:1px solid var(--border); font-size:.88rem; vertical-align:middle; }
+  table.data tbody tr{ cursor:pointer; transition:background .13s; }
+  table.data tbody tr:hover{ background:var(--field-focus); }
+  table.data tbody tr:last-child td{ border-bottom:none; }
+  table.data tbody tr:focus-visible{ outline:2px solid var(--gold-bright); outline-offset:-2px; }
+  .ref{ font-family:"Consolas","SF Mono",Menlo,monospace; font-weight:700; font-size:.82rem; letter-spacing:.2px; color:var(--text); }
+  .muted{ color:var(--text-dim); }
+  .cell-strong{ color:var(--text); font-weight:600; }
+  .cell-sub{ display:block; font-size:.76rem; color:var(--text-dim); margin-top:2px; }
+
+  /* Badges */
+  .badge{ display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:.74rem; font-weight:600; letter-spacing:.2px; border:1px solid transparent; white-space:nowrap; }
+  .badge.dot::before{ content:""; width:6px; height:6px; border-radius:50%; background:currentColor; }
+  .badge-fatura{ color:var(--gold-bright); background:var(--gold-glow); border-color:#4a4030; }
+  .badge-cpcv{ color:var(--blue-bright); background:var(--blue-glow); border-color:#3a4a63; }
+  .st-novo{ color:var(--blue-bright); background:var(--blue-glow); border-color:#3a4a63; }
+  .st-proc{ color:var(--gold-bright); background:var(--gold-glow); border-color:#4a4030; }
+  .st-done{ color:var(--green); background:rgba(91,189,138,.13); border-color:rgba(91,189,138,.4); }
+  .st-wait{ color:var(--text-soft); background:rgba(122,135,152,.12); border-color:#3d4654; }
+
+  .docs-cell{ display:inline-flex; align-items:center; gap:8px; color:var(--text-soft); }
+  .docs-cell svg{ width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:1.8; }
+  .docs-cell .sync{ display:inline-flex; align-items:center; gap:4px; font-size:.72rem; }
+  .docs-cell .sync.ok{ color:var(--green); }
+  .docs-cell .sync.pend{ color:var(--text-dim); }
+  .docs-cell .sync svg{ width:13px; height:13px; }
+  .row-action{ display:inline-flex; align-items:center; gap:5px; color:var(--gold-bright); font-size:.78rem; font-weight:600; }
+  .row-action svg{ width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:2; }
+
+  /* =================== CARTÕES (mobile) =================== */
+  .cards-list{ display:none; flex-direction:column; gap:12px; margin-top:6px; }
+  .req-card{
+    background:linear-gradient(160deg,var(--card-2),var(--card)); border:1px solid var(--border);
+    border-radius:14px; padding:15px 16px; box-shadow:var(--shadow); cursor:pointer;
+    display:flex; flex-direction:column; gap:10px; position:relative; overflow:hidden;
+  }
+  .req-card:active{ transform:scale(.995); }
+  .req-card .rc-top{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .req-card .rc-ref{ font-family:"Consolas",Menlo,monospace; font-weight:700; font-size:.82rem; }
+  .req-card .rc-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:.84rem; }
+  .req-card .rc-label{ color:var(--text-dim); font-size:.76rem; }
+  .req-card .rc-foot{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:2px; }
+
+  /* Estados de carregamento / vazio */
+  .state{ text-align:center; padding:52px 20px; color:var(--text-dim); }
+  .state svg{ width:40px; height:40px; stroke:currentColor; fill:none; stroke-width:1.6; margin:0 auto 12px; display:block; }
+  .state h3{ color:var(--text-soft); font-size:1rem; font-weight:600; margin-bottom:4px; }
+  .state p{ font-size:.85rem; }
+  .skeleton-row{ height:52px; border-bottom:1px solid var(--border); position:relative; overflow:hidden; }
+  .skeleton-row::after{ content:""; position:absolute; inset:0; background:linear-gradient(90deg,transparent,rgba(255,255,255,.04),transparent); animation:shimmer 1.2s infinite; }
+  @keyframes shimmer{ from{transform:translateX(-100%)} to{transform:translateX(100%)} }
+
+  /* =================== DRAWER DE DETALHE =================== */
+  .drawer-overlay{
+    position:fixed; inset:0; z-index:40; display:none;
+    background:rgba(8,11,16,.6); backdrop-filter:blur(3px);
+  }
+  .drawer-overlay.open{ display:block; }
+  .drawer{
+    position:fixed; top:0; right:0; bottom:0; z-index:41; width:min(520px,100%);
+    background:linear-gradient(200deg,var(--card-2),var(--bg-2));
+    border-left:1px solid var(--border); box-shadow:-30px 0 70px -30px rgba(0,0,0,.85);
+    transform:translateX(100%); transition:transform .28s cubic-bezier(.4,0,.2,1);
+    display:flex; flex-direction:column;
+  }
+  .drawer.open{ transform:translateX(0); }
+  .drawer-head{
+    display:flex; align-items:flex-start; gap:12px; padding:20px 22px 16px; border-bottom:1px solid var(--border);
+  }
+  .drawer-head .dh-main{ flex:1; min-width:0; }
+  .drawer-head .dh-ref{ font-family:"Consolas",Menlo,monospace; font-weight:700; font-size:1.05rem; letter-spacing:.3px; }
+  .drawer-head .dh-badges{ display:flex; flex-wrap:wrap; gap:7px; margin-top:9px; }
+  .drawer-close{
+    width:36px; height:36px; padding:0; border-radius:10px; flex-shrink:0;
+    background:transparent; border:1px solid var(--border); color:var(--text-soft);
+    font-size:1.3rem; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  }
+  .drawer-close:hover{ color:var(--text); border-color:var(--border-hover); }
+  .drawer-body{ flex:1; overflow-y:auto; padding:20px 22px 24px; }
+
+  .d-section{ margin-top:22px; }
+  .d-section:first-child{ margin-top:0; }
+  .d-section > .d-title{
+    font-size:.72rem; font-weight:700; letter-spacing:1.1px; text-transform:uppercase;
+    color:var(--gold-bright); margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--border);
+  }
+  .d-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px 16px; }
+  .d-item{ display:flex; flex-direction:column; gap:3px; min-width:0; }
+  .d-item.full{ grid-column:1 / -1; }
+  .d-item .k{ font-size:.72rem; color:var(--text-dim); letter-spacing:.2px; }
+  .d-item .v{ font-size:.9rem; color:var(--text); word-break:break-word; }
+
+  .doc-line{ display:flex; align-items:center; gap:9px; font-size:.85rem; color:var(--text-soft);
+    background:var(--card-2); border:1px solid var(--border); border-radius:9px; padding:9px 12px; margin-bottom:7px; }
+  .doc-line svg{ width:16px; height:16px; stroke:var(--blue-bright); fill:none; stroke-width:2; flex-shrink:0; }
+  .doc-line .sz{ margin-left:auto; font-size:.75rem; color:var(--text-dim); }
+
+  /* Sincronização */
+  .sync-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .sync-box{ background:var(--card-2); border:1px solid var(--border); border-radius:11px; padding:13px 14px; }
+  .sync-box .sb-head{ display:flex; align-items:center; gap:8px; font-size:.82rem; font-weight:600; color:var(--text); }
+  .sync-box .sb-head svg{ width:17px; height:17px; }
+  .sync-box .sb-status{ margin-top:9px; display:inline-flex; align-items:center; gap:6px; font-size:.78rem; font-weight:600; }
+  .sync-box .sb-status.ok{ color:var(--green); }
+  .sync-box .sb-status.proc{ color:var(--gold-bright); }
+  .sync-box .sb-status.err{ color:#e08a8a; }
+  .sync-box .sb-status .spin{ width:12px; height:12px; border:2px solid currentColor; border-right-color:transparent; border-radius:50%; animation:spin .7s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg) } }
+  .sync-box .btn{ margin-top:11px; width:100%; justify-content:center; font-size:.78rem; padding:8px 12px; }
+
+  /* Histórico */
+  .timeline{ list-style:none; position:relative; padding-left:20px; }
+  .timeline::before{ content:""; position:absolute; left:5px; top:4px; bottom:4px; width:1px; background:var(--border); }
+  .timeline li{ position:relative; padding:0 0 15px 4px; }
+  .timeline li:last-child{ padding-bottom:0; }
+  .timeline li::before{ content:""; position:absolute; left:-19px; top:3px; width:9px; height:9px; border-radius:50%; background:var(--gold); border:2px solid var(--bg-2); }
+  .timeline .tl-text{ font-size:.85rem; color:var(--text); }
+  .timeline .tl-meta{ font-size:.74rem; color:var(--text-dim); margin-top:2px; }
+
+  textarea{ resize:vertical; min-height:74px; }
+
+  .drawer-foot{ border-top:1px solid var(--border); padding:16px 22px; background:var(--bg-2); }
+  .drawer-foot .actions{ display:flex; flex-wrap:wrap; gap:10px; }
+  .drawer-foot .actions .btn{ flex:1; justify-content:center; min-width:130px; }
+
+  /* Toast */
+  .toast-wrap{ position:fixed; left:50%; bottom:26px; transform:translateX(-50%); z-index:60; display:flex; flex-direction:column; gap:10px; align-items:center; pointer-events:none; }
+  .toast{
+    display:flex; align-items:center; gap:10px; padding:12px 18px; border-radius:12px;
+    background:linear-gradient(160deg,var(--card-2),var(--card)); border:1px solid var(--border);
+    box-shadow:var(--shadow-hover); color:var(--text); font-size:.88rem; font-weight:600;
+    animation:toastIn .25s ease; max-width:90vw;
+  }
+  .toast svg{ width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:2.2; flex-shrink:0; }
+  .toast.ok svg{ color:var(--green); }
+  @keyframes toastIn{ from{ transform:translateY(10px); opacity:0 } to{ transform:none; opacity:1 } }
+
+  /* Confirmação (modal central, mesmo estilo do portal) */
+  .modal-overlay{ position:fixed; inset:0; z-index:70; display:none; align-items:center; justify-content:center; padding:20px; background:rgba(8,11,16,.72); backdrop-filter:blur(4px); }
+  .modal-overlay.open{ display:flex; }
+  .modal{ width:100%; max-width:400px; text-align:center; position:relative; background:linear-gradient(160deg,var(--card-2),var(--card)); border:1px solid var(--border); border-radius:18px; padding:28px 26px; box-shadow:0 30px 70px -20px rgba(0,0,0,.8); animation:pop .18s ease; }
+  @keyframes pop{ from{ transform:translateY(8px) scale(.98); opacity:0 } to{ transform:none; opacity:1 } }
+  .modal .modal-icon{ width:54px; height:54px; margin:0 auto 14px; border-radius:14px; background:rgba(91,189,138,.14); border:1px solid rgba(91,189,138,.4); color:var(--green); display:flex; align-items:center; justify-content:center; }
+  .modal .modal-icon svg{ width:27px; height:27px; stroke:currentColor; fill:none; stroke-width:2; }
+  .modal h2{ font-size:1.2rem; font-weight:600; }
+  .modal p{ margin-top:8px; font-size:.88rem; color:var(--text-soft); line-height:1.5; }
+  .modal .m-btns{ margin-top:20px; display:flex; gap:10px; }
+  .modal .m-btns .btn{ flex:1; justify-content:center; }
+
+  .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0; }
+
+  /* Controlos de demonstração (simulação de entrada de pedidos) */
+  .demo-controls{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+  .demo-controls .btn{ padding:8px 14px; font-size:.82rem; }
+  .live-toggle{ display:inline-flex; align-items:center; gap:8px; font-size:.8rem; color:var(--text-soft); cursor:pointer; user-select:none; }
+  .live-toggle input{ position:absolute; opacity:0; width:0; height:0; }
+  .live-toggle .track{ width:38px; height:22px; border-radius:999px; background:var(--field); border:1px solid var(--border); position:relative; transition:all .18s; flex-shrink:0; }
+  .live-toggle .track::after{ content:""; position:absolute; top:2px; left:2px; width:16px; height:16px; border-radius:50%; background:var(--text-dim); transition:all .18s; }
+  .live-toggle input:checked + .track{ background:var(--gold-glow); border-color:var(--gold); }
+  .live-toggle input:checked + .track::after{ transform:translateX(16px); background:var(--gold-bright); }
+  .live-toggle input:focus-visible + .track{ box-shadow:0 0 0 3px var(--gold-glow); }
+
+  @keyframes flashRow{ 0%,20%{ background:rgba(198,162,95,.20) } 100%{ background:transparent } }
+  #table-body tr.flash-new{ animation:flashRow 2.4s ease; }
+  @keyframes flashCard{ 0%,20%{ border-color:var(--gold-bright); box-shadow:0 0 0 2px var(--gold-glow), var(--shadow) } 100%{ border-color:var(--border); box-shadow:var(--shadow) } }
+  .req-card.flash-new{ animation:flashCard 2.4s ease; }
+
+  /* =================== PORTÃO DE SESSÃO (Firebase) =================== */
+  #auth-gate{ display:none; }
+  :root[data-auth="checking"] #auth-gate,
+  :root[data-auth="login"] #auth-gate{
+    display:flex; position:fixed; inset:0; z-index:80; align-items:center; justify-content:center; padding:24px;
+    background:radial-gradient(1100px 520px at 50% -8%, #232c39 0%, var(--bg) 58%), var(--bg);
+  }
+  .gate-card{ width:100%; max-width:380px; text-align:center;
+    background:linear-gradient(160deg,var(--card-2),var(--card)); border:1px solid var(--border);
+    border-radius:18px; padding:34px 30px; box-shadow:var(--shadow-hover); }
+  .gate-logo{ width:100%; max-width:210px; height:auto; display:block; margin:0 auto 22px; }
+  .gate-checking{ color:var(--text-soft); font-size:.9rem; display:flex; align-items:center; justify-content:center; gap:10px; padding:8px 0; }
+  .gate-checking .spin{ width:15px; height:15px; border:2px solid currentColor; border-right-color:transparent; border-radius:50%; animation:spin .7s linear infinite; }
+  .gate-form h1{ font-size:1.3rem; font-weight:600; }
+  .gate-form .gate-sub{ margin-top:6px; margin-bottom:18px; font-size:.88rem; color:var(--text-soft); }
+  .gate-form label{ display:block; text-align:left; font-size:.78rem; font-weight:600; color:var(--text-soft); margin:12px 0 6px; }
+  .gate-error{ min-height:18px; margin:12px 0 4px; font-size:.82rem; color:#e08a8a; text-align:left; }
+  .gate-form .btn{ width:100%; justify-content:center; margin-top:8px; }
+
+  /* =================== RESPONSIVO =================== */
+  @media (max-width:1000px){
+    .summary{ grid-template-columns:repeat(2,1fr); }
+    .filters{ grid-template-columns:1fr 1fr; }
+    .ffield.search-wrap-field{ grid-column:1 / -1; }
+    .ffield.dates{ grid-column:1 / -1; }
+    .filters .clear-wrap{ grid-column:1 / -1; }
+  }
+  @media (max-width:760px){
+    .appbar{ padding:12px 16px; gap:12px; }
+    .appbar .app-name{ display:none; }
+    .appbar .sep{ display:none; }
+    .who .meta{ display:none; }
+    .wrap{ padding:22px 14px 56px; }
+    .toolbar{ gap:12px; }
+    .seg{ width:100%; overflow-x:auto; }
+    /* Tabela → cartões */
+    .table-scroll{ display:none; }
+    .cards-list{ display:flex; }
+    /* Filtros recolhíveis */
+    .filters-toggle{
+      display:flex; align-items:center; justify-content:space-between; width:100%;
+      margin-top:16px; padding:12px 16px; cursor:pointer;
+      background:var(--card); border:1px solid var(--border); border-radius:12px;
+      font-size:.88rem; font-weight:600; color:var(--text);
+    }
+    .filters-toggle svg{ width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:2; transition:transform .2s; }
+    .filters-toggle[aria-expanded="true"] svg{ transform:rotate(180deg); }
+    .filters{ margin-top:10px; grid-template-columns:1fr; display:none; }
+    .filters.open{ display:grid; }
+    .ffield.dates{ flex-direction:column; }
+    /* Drawer em ecrã completo */
+    .drawer{ width:100%; }
+    .drawer-foot .actions .btn{ min-width:0; flex-basis:calc(50% - 5px); }
+  }
+  @media (max-width:420px){
+    .summary{ grid-template-columns:repeat(2,1fr); gap:12px; }
+    .stat{ padding:14px; }
+    .stat .s-val{ font-size:1.3rem; }
+    .d-grid{ grid-template-columns:1fr; }
+    .sync-grid{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- =============== PORTÃO DE SESSÃO (modo Firebase) =============== -->
+  <div id="auth-gate">
+    <div class="gate-card">
+      <img id="gate-logo" class="gate-logo" alt="FIDAL Partners">
+      <div class="gate-checking" id="gate-checking"><span class="spin"></span> A verificar sessão…</div>
+      <form id="gate-form" class="gate-form" novalidate hidden>
+        <h1>Centro de Coordenação</h1>
+        <p class="gate-sub">Inicie sessão para aceder aos pedidos.</p>
+        <label for="gate-email">Email</label>
+        <input id="gate-email" type="email" autocomplete="username" placeholder="email@fidalpartners…" required>
+        <label for="gate-pass">Palavra-passe</label>
+        <input id="gate-pass" type="password" autocomplete="current-password" placeholder="••••••••" required>
+        <div class="gate-error" id="gate-error" role="alert"></div>
+        <button type="submit" class="btn btn-gold" id="gate-submit">Entrar</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- =============== CABEÇALHO =============== -->
+  <header class="appbar">
+    <img class="logo" src="data:image/png;base64,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" alt="FIDAL Partners">
+    <span class="sep" aria-hidden="true"></span>
+    <span class="app-name">Centro de Coordenação</span>
+    <span class="spacer"></span>
+    <div class="who">
+      <div class="meta">
+        <div class="name" id="coord-name">Coordenação</div>
+        <div class="role">Coordenadora</div>
+      </div>
+      <div class="avatar" id="coord-initials" aria-hidden="true">CO</div>
+    </div>
+    <button class="btn btn-ghost" id="logout-btn" title="Terminar sessão (apenas visual)">
+      <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+      <span>Terminar sessão</span>
+    </button>
+  </header>
+
+  <main class="wrap">
+    <!-- Título -->
+    <div class="page-head">
+      <h1>Centro de Coordenação</h1>
+      <p>Consulte e acompanhe os pedidos enviados pelos consultores.</p>
+      <div class="accent"></div>
+    </div>
+
+    <!-- Cartões de resumo -->
+    <section class="summary" aria-label="Resumo de pedidos">
+      <div class="stat" data-tone="novo">
+        <div class="s-icon"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+        <div><div class="s-val" id="stat-novos">—</div><div class="s-lbl">Novos</div></div>
+      </div>
+      <div class="stat" data-tone="proc">
+        <div class="s-icon"><svg viewBox="0 0 24 24"><path d="M12 6v6l4 2"/><circle cx="12" cy="12" r="9"/></svg></div>
+        <div><div class="s-val" id="stat-proc">—</div><div class="s-lbl">Em processamento</div></div>
+      </div>
+      <div class="stat" data-tone="done">
+        <div class="s-icon"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
+        <div><div class="s-val" id="stat-done">—</div><div class="s-lbl">Concluídos</div></div>
+      </div>
+      <div class="stat" data-tone="total">
+        <div class="s-icon"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></div>
+        <div><div class="s-val" id="stat-total">—</div><div class="s-lbl">Total de pedidos</div></div>
+      </div>
+    </section>
+
+    <!-- Separadores + contagem -->
+    <div class="toolbar">
+      <div class="seg" role="tablist" aria-label="Tipo de pedido">
+        <input type="radio" name="tab" id="tab-todos" value="todos" checked>
+        <label for="tab-todos" role="tab">Todos</label>
+        <input type="radio" name="tab" id="tab-fat" value="fatura">
+        <label for="tab-fat" role="tab">Pedidos de Faturas</label>
+        <input type="radio" name="tab" id="tab-cpcv" value="cpcv">
+        <label for="tab-cpcv" role="tab">Entregas de CPCV</label>
+      </div>
+      <div class="demo-controls">
+        <button id="sim-one" class="btn btn-gold" title="Simular a chegada de um novo pedido submetido por um consultor">+ Simular pedido</button>
+        <label class="live-toggle" title="Receber pedidos automaticamente (demonstração)">
+          <input type="checkbox" id="sim-live">
+          <span class="track" aria-hidden="true"></span>
+          <span>Auto</span>
+        </label>
+        <span class="muted" id="result-count" aria-live="polite" style="font-size:.82rem"></span>
+      </div>
+    </div>
+
+    <!-- Botão de filtros (mobile) -->
+    <button class="filters-toggle" id="filters-toggle" aria-expanded="false" aria-controls="filters">
+      <span>Pesquisa e filtros</span>
+      <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+
+    <!-- Filtros -->
+    <div class="filters" id="filters">
+      <div class="ffield search-wrap-field">
+        <label for="f-search">Pesquisar</label>
+        <div class="search-wrap">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <input id="f-search" type="search" placeholder="Referência, consultor, cliente, NIF, imóvel…" autocomplete="off">
+        </div>
+      </div>
+      <div class="ffield">
+        <label for="f-estado">Estado</label>
+        <select id="f-estado">
+          <option value="">Todos os estados</option>
+          <option value="novo">Novo</option>
+          <option value="processamento">Em processamento</option>
+          <option value="concluido">Concluído</option>
+          <option value="aguardar">A aguardar informação</option>
+        </select>
+      </div>
+      <div class="ffield">
+        <label for="f-consultor">Consultor</label>
+        <select id="f-consultor"><option value="">Todos os consultores</option></select>
+      </div>
+      <div class="ffield dates">
+        <div class="fsub">
+          <label for="f-de">De</label>
+          <input id="f-de" type="date">
+        </div>
+        <div class="fsub">
+          <label for="f-ate">Até</label>
+          <input id="f-ate" type="date">
+        </div>
+      </div>
+      <div class="ffield clear-wrap">
+        <label>&nbsp;</label>
+        <button class="btn btn-ghost" id="clear-filters" style="justify-content:center">Limpar filtros</button>
+      </div>
+    </div>
+
+    <!-- Lista -->
+    <section class="list-panel" aria-label="Lista de pedidos">
+      <div class="table-scroll">
+        <table class="data">
+          <thead>
+            <tr>
+              <th>Referência</th><th>Tipo</th><th>Data</th><th>Consultor</th>
+              <th>Cliente / Entidade</th><th>Estado</th><th>Documentos</th><th>Ação</th>
+            </tr>
+          </thead>
+          <tbody id="table-body"><!-- preenchido por JS --></tbody>
+        </table>
+      </div>
+      <div class="cards-list" id="cards-list"><!-- versão mobile --></div>
+    </section>
+  </main>
+
+  <!-- =============== DRAWER DE DETALHE =============== -->
+  <div class="drawer-overlay" id="drawer-overlay"></div>
+  <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-ref" aria-hidden="true">
+    <div class="drawer-head">
+      <div class="dh-main">
+        <div class="dh-ref" id="drawer-ref">—</div>
+        <div class="dh-badges" id="drawer-badges"></div>
+      </div>
+      <button class="drawer-close" id="drawer-close" aria-label="Fechar detalhe">&times;</button>
+    </div>
+    <div class="drawer-body" id="drawer-body"><!-- preenchido por JS --></div>
+    <div class="drawer-foot" id="drawer-foot"><!-- ações preenchidas por JS --></div>
+  </aside>
+
+  <!-- Toasts -->
+  <div class="toast-wrap" id="toast-wrap" aria-live="polite"></div>
+
+  <!-- Modal de confirmação -->
+  <div class="modal-overlay" id="confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+    <div class="modal">
+      <div class="modal-icon"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
+      <h2 id="confirm-title">Concluir pedido?</h2>
+      <p id="confirm-text">Esta ação marca o pedido como concluído.</p>
+      <div class="m-btns">
+        <button class="btn btn-ghost" id="confirm-cancel">Cancelar</button>
+        <button class="btn btn-green" id="confirm-ok">Sim, concluir</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =======================================================================
+       CONFIGURAÇÃO — Firebase
+       Cole aqui a firebaseConfig do seu projeto. Vazio ({}) = MODO LOCAL
+       (dados simulados). Preenchido = MODO FIREBASE (login + tempo real).
+       Nota: esta config é pública por design; a segurança vem das Regras + Auth.
+       ======================================================================= -->
+  <script>
+    window.FIREBASE_CONFIG = {
+      apiKey: "AIzaSyD1P_xFGfX0GrGH30cJUtsgLXZHMplv_M8",
+      authDomain: "fidalpartners.firebaseapp.com",
+      projectId: "fidalpartners",
+      storageBucket: "fidalpartners.firebasestorage.app",
+      messagingSenderId: "1088821785281",
+      appId: "1:1088821785281:web:8ebd37738dac91b96bda40",
+      measurementId: "G-1WPK1SB4GG"
+    };
+    window.COORD_MODE = (window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.apiKey) ? "firebase" : "mock";
+    // Em modo Firebase mostramos o "portão" de sessão até a autenticação resolver.
+    if (window.COORD_MODE === "firebase") document.documentElement.setAttribute("data-auth", "checking");
+  </script>
+
+  <!-- =======================================================================
+       CAMADA DE DADOS + SERVIÇO (preparada para Firebase)
+       Ver documentação no fundo deste bloco.
+       ======================================================================= -->
+  <script>
+  /* ============================================================
+     1) TIPOS (JSDoc) — contrato dos pedidos
+     ============================================================
+     @typedef {'fatura'|'cpcv'} RequestType
+     @typedef {'novo'|'processamento'|'concluido'|'aguardar'} RequestStatus
+     @typedef {'criada'|'processar'|'erro'} DriveStatus
+     @typedef {'criado'|'processar'|'erro'} SheetStatus
+
+     @typedef {Object} RequestDoc  { name:string, size:string }
+     @typedef {Object} HistoryEntry { text:string, at:string, by:string }
+
+     @typedef {Object} RequestData   // campos submetidos pelo consultor
+       // Faturas: tipoAto, nome, moradaFiscal, localidadeFiscal, cpFiscal, nif,
+       //          ami, idpv, valor, moradaImovel, localidadeImovel, cpImovel, dataAssinatura
+       // CPCV:    promitenteVendedor, promitenteComprador, nif, idpv, imovel,
+       //          valorNegocio, sinal, dataCpcv, prazoEscritura
+
+     @typedef {Object} Request {
+       id:string, ref:string, type:RequestType, status:RequestStatus,
+       createdAt:string, consultor:string, cliente:string,
+       observacoes:string, data:RequestData, docs:RequestDoc[],
+       drive:DriveStatus, sheet:SheetStatus, driveUrl:string, sheetUrl:string,
+       history:HistoryEntry[]
+     }
+  */
+
+  /* ============================================================
+     2) DADOS SIMULADOS  (substituir por Firebase — ver secção 4)
+     ============================================================ */
+  window.MOCK_REQUESTS = [
+    {
+      id:"1", ref:"FAT-2026-000123", type:"fatura", status:"novo",
+      createdAt:"2026-07-24T09:12:00", consultor:"Ana Marques",
+      cliente:"Imobiliária Sol Nascente, Lda.", observacoes:"Faturar com urgência — escritura já realizada.",
+      data:{ tipoAto:"Escritura", nome:"Imobiliária Sol Nascente, Lda.", moradaFiscal:"Rua das Flores, 12, 2.º Dto.",
+        localidadeFiscal:"Lisboa", cpFiscal:"1200-192", nif:"501234567", ami:"AMI 12345", idpv:"PV-88213",
+        valor:"18500.00", moradaImovel:"Av. da Liberdade, 220, 4.º", localidadeImovel:"Lisboa", cpImovel:"1250-096",
+        dataAssinatura:"2026-07-22" },
+      docs:[{name:"Escritura.pdf",size:"1.2 MB"},{name:"CC_representante.pdf",size:"340 KB"}],
+      drive:"criada", sheet:"criado",
+      driveUrl:"https://drive.google.com/drive/folders/EXEMPLO-FAT-000123",
+      sheetUrl:"https://docs.google.com/spreadsheets/d/EXEMPLO/edit#gid=0",
+      history:[{text:"Pedido submetido pelo consultor", at:"2026-07-24T09:12:00", by:"Ana Marques"}]
+    },
+    {
+      id:"2", ref:"CPCV-2026-000098", type:"cpcv", status:"processamento",
+      createdAt:"2026-07-23T15:40:00", consultor:"João Ferreira",
+      cliente:"Maria Silva ↔ Pedro Costa", observacoes:"",
+      data:{ promitenteVendedor:"Maria Silva", promitenteComprador:"Pedro Costa", nif:"219876543",
+        idpv:"ID-40921", imovel:"Moradia T4 — Rua do Pinhal, 8, Cascais", valorNegocio:"420000.00",
+        sinal:"42000.00", dataCpcv:"2026-07-20", prazoEscritura:"2026-09-30" },
+      docs:[{name:"CPCV_assinado.pdf",size:"2.1 MB"}],
+      drive:"criada", sheet:"processar",
+      driveUrl:"https://drive.google.com/drive/folders/EXEMPLO-CPCV-000098", sheetUrl:"",
+      history:[
+        {text:"Pedido submetido pelo consultor", at:"2026-07-23T15:40:00", by:"João Ferreira"},
+        {text:"Processamento iniciado", at:"2026-07-24T08:05:00", by:"Coordenação"}
+      ]
+    },
+    {
+      id:"3", ref:"FAT-2026-000124", type:"fatura", status:"aguardar",
+      createdAt:"2026-07-23T11:05:00", consultor:"Ana Marques",
+      cliente:"Tiago Nunes", observacoes:"NIF em falta — pedido de esclarecimento enviado.",
+      data:{ tipoAto:"CPCV", nome:"Tiago Nunes", moradaFiscal:"Rua Nova, 3", localidadeFiscal:"Porto",
+        cpFiscal:"4000-001", nif:"—", ami:"", idpv:"PV-77120", valor:"9500.00",
+        moradaImovel:"Rua Nova, 3", localidadeImovel:"Porto", cpImovel:"4000-001", dataAssinatura:"2026-07-21" },
+      docs:[],
+      drive:"processar", sheet:"processar", driveUrl:"", sheetUrl:"",
+      history:[
+        {text:"Pedido submetido pelo consultor", at:"2026-07-23T11:05:00", by:"Ana Marques"},
+        {text:"A aguardar informação: NIF em falta", at:"2026-07-23T14:20:00", by:"Coordenação"}
+      ]
+    },
+    {
+      id:"4", ref:"CPCV-2026-000099", type:"cpcv", status:"novo",
+      createdAt:"2026-07-25T10:30:00", consultor:"Rita Lopes",
+      cliente:"Herdeiros de A. Sousa ↔ Nuno Dias", observacoes:"",
+      data:{ promitenteVendedor:"Herdeiros de A. Sousa", promitenteComprador:"Nuno Dias", nif:"238112900",
+        idpv:"ID-51200", imovel:"Apartamento T2 — Rua Direita, 45, Braga", valorNegocio:"165000.00",
+        sinal:"16500.00", dataCpcv:"2026-07-24", prazoEscritura:"2026-10-15" },
+      docs:[{name:"CPCV.pdf",size:"1.8 MB"},{name:"Caderneta_predial.pdf",size:"620 KB"},{name:"Certidao_permanente.pdf",size:"410 KB"}],
+      drive:"criada", sheet:"criado",
+      driveUrl:"https://drive.google.com/drive/folders/EXEMPLO-CPCV-000099",
+      sheetUrl:"https://docs.google.com/spreadsheets/d/EXEMPLO/edit#gid=1",
+      history:[{text:"Pedido submetido pelo consultor", at:"2026-07-25T10:30:00", by:"Rita Lopes"}]
+    },
+    {
+      id:"5", ref:"FAT-2026-000120", type:"fatura", status:"concluido",
+      createdAt:"2026-07-18T16:00:00", consultor:"João Ferreira",
+      cliente:"Construções Aurora, S.A.", observacoes:"Fatura emitida e enviada ao cliente.",
+      data:{ tipoAto:"Escritura", nome:"Construções Aurora, S.A.", moradaFiscal:"Zona Industrial, Lote 7",
+        localidadeFiscal:"Aveiro", cpFiscal:"3800-055", nif:"502998877", ami:"AMI 20984", idpv:"PV-66010",
+        valor:"32000.00", moradaImovel:"Rua do Comércio, 100", localidadeImovel:"Aveiro", cpImovel:"3800-120",
+        dataAssinatura:"2026-07-15" },
+      docs:[{name:"Escritura.pdf",size:"1.4 MB"},{name:"Fatura_emitida.pdf",size:"210 KB"}],
+      drive:"criada", sheet:"criado",
+      driveUrl:"https://drive.google.com/drive/folders/EXEMPLO-FAT-000120",
+      sheetUrl:"https://docs.google.com/spreadsheets/d/EXEMPLO/edit#gid=2",
+      history:[
+        {text:"Pedido submetido pelo consultor", at:"2026-07-18T16:00:00", by:"João Ferreira"},
+        {text:"Processamento iniciado", at:"2026-07-19T09:10:00", by:"Coordenação"},
+        {text:"Pedido concluído", at:"2026-07-19T17:45:00", by:"Coordenação"}
+      ]
+    },
+    {
+      id:"6", ref:"CPCV-2026-000095", type:"cpcv", status:"concluido",
+      createdAt:"2026-07-16T09:20:00", consultor:"Rita Lopes",
+      cliente:"Sofia Ramos ↔ Investimentos Vega, Lda.", observacoes:"",
+      data:{ promitenteVendedor:"Sofia Ramos", promitenteComprador:"Investimentos Vega, Lda.", nif:"245667001",
+        idpv:"ID-33470", imovel:"Loja comercial — Av. Central, 12, Faro", valorNegocio:"280000.00",
+        sinal:"28000.00", dataCpcv:"2026-07-12", prazoEscritura:"2026-09-01" },
+      docs:[{name:"CPCV_assinado.pdf",size:"2.4 MB"}],
+      drive:"criada", sheet:"criado",
+      driveUrl:"https://drive.google.com/drive/folders/EXEMPLO-CPCV-000095",
+      sheetUrl:"https://docs.google.com/spreadsheets/d/EXEMPLO/edit#gid=3",
+      history:[
+        {text:"Pedido submetido pelo consultor", at:"2026-07-16T09:20:00", by:"Rita Lopes"},
+        {text:"Processamento iniciado", at:"2026-07-16T14:00:00", by:"Coordenação"},
+        {text:"Pedido concluído", at:"2026-07-17T10:30:00", by:"Coordenação"}
+      ]
+    },
+    {
+      id:"7", ref:"FAT-2026-000125", type:"fatura", status:"novo",
+      createdAt:"2026-07-26T08:45:00", consultor:"Miguel Andrade",
+      cliente:"Carla Teixeira", observacoes:"",
+      data:{ tipoAto:"Escritura", nome:"Carla Teixeira", moradaFiscal:"Travessa da Sé, 5",
+        localidadeFiscal:"Coimbra", cpFiscal:"3000-215", nif:"213445678", ami:"AMI 30567", idpv:"PV-90011",
+        valor:"12750.00", moradaImovel:"Rua Larga, 22, 1.º Esq.", localidadeImovel:"Coimbra", cpImovel:"3000-100",
+        dataAssinatura:"2026-07-24" },
+      docs:[{name:"Escritura.pdf",size:"980 KB"}],
+      drive:"erro", sheet:"processar",
+      driveUrl:"", sheetUrl:"",
+      history:[
+        {text:"Pedido submetido pelo consultor", at:"2026-07-26T08:45:00", by:"Miguel Andrade"},
+        {text:"Erro na sincronização do Google Drive", at:"2026-07-26T08:46:00", by:"Sistema"}
+      ]
+    },
+    {
+      id:"8", ref:"CPCV-2026-000100", type:"cpcv", status:"processamento",
+      createdAt:"2026-07-25T17:10:00", consultor:"Miguel Andrade",
+      cliente:"Ricardo Pinto ↔ Ana Gomes", observacoes:"Prazo de escritura apertado.",
+      data:{ promitenteVendedor:"Ricardo Pinto", promitenteComprador:"Ana Gomes", nif:"251009988",
+        idpv:"ID-60233", imovel:"Moradia T3 — Rua das Oliveiras, 9, Setúbal", valorNegocio:"310000.00",
+        sinal:"31000.00", dataCpcv:"2026-07-23", prazoEscritura:"2026-08-20" },
+      docs:[{name:"CPCV.pdf",size:"2.0 MB"},{name:"Comprovativo_sinal.pdf",size:"180 KB"}],
+      drive:"criada", sheet:"criado",
+      driveUrl:"https://drive.google.com/drive/folders/EXEMPLO-CPCV-000100",
+      sheetUrl:"https://docs.google.com/spreadsheets/d/EXEMPLO/edit#gid=4",
+      history:[
+        {text:"Pedido submetido pelo consultor", at:"2026-07-25T17:10:00", by:"Miguel Andrade"},
+        {text:"Processamento iniciado", at:"2026-07-26T09:00:00", by:"Coordenação"}
+      ]
+    },
+    {
+      id:"9", ref:"FAT-2026-000122", type:"fatura", status:"processamento",
+      createdAt:"2026-07-22T13:25:00", consultor:"Ana Marques",
+      cliente:"Green Homes, Lda.", observacoes:"",
+      data:{ tipoAto:"CPCV", nome:"Green Homes, Lda.", moradaFiscal:"Rua do Sol, 40",
+        localidadeFiscal:"Lisboa", cpFiscal:"1000-300", nif:"504112233", ami:"AMI 11002", idpv:"PV-70344",
+        valor:"21000.00", moradaImovel:"Rua do Sol, 40, R/C", localidadeImovel:"Lisboa", cpImovel:"1000-300",
+        dataAssinatura:"2026-07-20" },
+      docs:[{name:"CPCV.pdf",size:"1.6 MB"},{name:"Procuracao.pdf",size:"290 KB"}],
+      drive:"criada", sheet:"processar",
+      driveUrl:"https://drive.google.com/drive/folders/EXEMPLO-FAT-000122", sheetUrl:"",
+      history:[
+        {text:"Pedido submetido pelo consultor", at:"2026-07-22T13:25:00", by:"Ana Marques"},
+        {text:"Processamento iniciado", at:"2026-07-23T10:15:00", by:"Coordenação"}
+      ]
+    },
+    {
+      id:"10", ref:"CPCV-2026-000097", type:"cpcv", status:"concluido",
+      createdAt:"2026-07-17T10:00:00", consultor:"João Ferreira",
+      cliente:"Fernando Rocha ↔ Beatriz Antunes", observacoes:"",
+      data:{ promitenteVendedor:"Fernando Rocha", promitenteComprador:"Beatriz Antunes", nif:"233778100",
+        idpv:"ID-29800", imovel:"Apartamento T1 — Rua da Praia, 2, Portimão", valorNegocio:"140000.00",
+        sinal:"14000.00", dataCpcv:"2026-07-14", prazoEscritura:"2026-08-28" },
+      docs:[{name:"CPCV_assinado.pdf",size:"1.9 MB"}],
+      drive:"criada", sheet:"criado",
+      driveUrl:"https://drive.google.com/drive/folders/EXEMPLO-CPCV-000097",
+      sheetUrl:"https://docs.google.com/spreadsheets/d/EXEMPLO/edit#gid=5",
+      history:[
+        {text:"Pedido submetido pelo consultor", at:"2026-07-17T10:00:00", by:"João Ferreira"},
+        {text:"Processamento iniciado", at:"2026-07-17T15:30:00", by:"Coordenação"},
+        {text:"Pedido concluído", at:"2026-07-18T11:00:00", by:"Coordenação"}
+      ]
+    }
+  ];
+
+  /* ============================================================
+     3) CAMADA DE SERVIÇO  (única fronteira com os dados)
+     ------------------------------------------------------------
+     Os componentes visuais NUNCA leem MOCK_REQUESTS diretamente:
+     falam sempre com RequestsService. Assim, migrar para Firebase
+     é alterar SÓ este objeto (ver secção 4).
+     Todas as funções são assíncronas de propósito, para que a
+     assinatura não mude quando passarem a usar Firestore.
+     ============================================================ */
+  window.RequestsService = (function(){
+    const LATENCY = 260; // simula latência de rede
+    const clone = (o) => JSON.parse(JSON.stringify(o));
+    const delay = (v) => new Promise(res => setTimeout(() => res(v), LATENCY));
+
+    return {
+      /** @returns {Promise<Request[]>} */
+      async getRequests(){
+        return delay(clone(window.MOCK_REQUESTS));
+      },
+      /** @param {string} id @returns {Promise<Request|null>} */
+      async getRequestById(id){
+        const r = window.MOCK_REQUESTS.find(x => x.id === id);
+        return delay(r ? clone(r) : null);
+      },
+      /** @param {string} id @param {RequestStatus} status @param {string} [note] @returns {Promise<Request>} */
+      async updateRequestStatus(id, status, note){
+        const r = window.MOCK_REQUESTS.find(x => x.id === id);
+        if(!r) throw new Error("Pedido não encontrado: " + id);
+        r.status = status;
+        const labels = { novo:"Reaberto como Novo", processamento:"Processamento iniciado",
+          concluido:"Pedido concluído", aguardar:"Marcado como: a aguardar informação" };
+        r.history.push({ text: (note && note.trim()) ? note.trim() : labels[status],
+          at: new Date().toISOString(), by: "Coordenação" });
+        return delay(clone(r));
+      },
+      /** @param {string} id @param {string} text @returns {Promise<Request>} */
+      async addInternalNote(id, text){
+        const r = window.MOCK_REQUESTS.find(x => x.id === id);
+        if(!r) throw new Error("Pedido não encontrado: " + id);
+        r.history.push({ text: "Nota interna: " + text.trim(), at: new Date().toISOString(), by: "Coordenação" });
+        return delay(clone(r));
+      },
+      /** Grava o resultado da sincronização (Drive/Sheets). patch: {drive,sheet,driveUrl,sheetUrl,history:[texto]} */
+      async setSync(id, patch){
+        const r = window.MOCK_REQUESTS.find(x => x.id === id);
+        if(!r) return delay(null);
+        if(patch.drive) r.drive = patch.drive;
+        if(patch.sheet) r.sheet = patch.sheet;
+        if(patch.driveUrl !== undefined) r.driveUrl = patch.driveUrl;
+        if(patch.sheetUrl !== undefined) r.sheetUrl = patch.sheetUrl;
+        (patch.history || []).forEach(t => r.history.push({ text:t, at:new Date().toISOString(), by:"Sistema" }));
+        return delay(clone(r));
+      }
+    };
+  })();
+
+  /* ============================================================
+     3b) SIMULADOR DE ENTRADA DE PEDIDOS  (apenas demonstração)
+     ------------------------------------------------------------
+     Faz de conta que chegam pedidos novos submetidos pelos
+     consultores, para se ver o Centro de Coordenação "ao vivo".
+     Em produção é REMOVIDO e substituído por um listener Firestore
+     (onSnapshot) que chama onNew(...) a cada documento novo:
+
+         onSnapshot(query(collection(db,"pedidos"), orderBy("createdAt","desc")),
+           (snap) => snap.docChanges().forEach(ch => {
+             if(ch.type === "added") handleIncoming({ id:ch.doc.id, ...ch.doc.data() });
+           }));
+     ============================================================ */
+  window.RequestsSimulator = (function(){
+    const listeners = [];
+    let timer = null;
+
+    const CONSULTORES = ["Ana Marques","João Ferreira","Rita Lopes","Miguel Andrade","Sofia Cardoso","Bruno Teixeira"];
+    const ENTIDADES = ["Imobiliária Sol Nascente, Lda.","Green Homes, Lda.","Construções Aurora, S.A.","Investimentos Vega, Lda.","Habitat Prime, Lda.","Douro Living, S.A."];
+    const PESSOAS = ["Carla Teixeira","Tiago Nunes","Beatriz Antunes","Nuno Dias","Sofia Ramos","Pedro Costa","Helena Marto","Rui Barros"];
+    const CIDADES = [["Lisboa","1200-192"],["Porto","4000-001"],["Coimbra","3000-215"],["Braga","4700-320"],["Faro","8000-110"],["Aveiro","3800-055"]];
+    const RUAS = ["Rua das Flores","Av. da Liberdade","Rua Direita","Rua do Comércio","Travessa da Sé","Rua das Oliveiras","Av. Central"];
+    const TIPOS_IMOVEL = ["Apartamento T1","Apartamento T2","Apartamento T3","Moradia T3","Moradia T4","Loja comercial"];
+    const DOCS = [["Escritura.pdf","1.2 MB"],["CPCV_assinado.pdf","2.1 MB"],["Caderneta_predial.pdf","620 KB"],["Certidao_permanente.pdf","410 KB"],["CC_representante.pdf","340 KB"],["Comprovativo_sinal.pdf","180 KB"]];
+
+    const pick = a => a[Math.floor(Math.random()*a.length)];
+    const rint = (a,b) => Math.floor(a + Math.random()*(b-a+1));
+    const nif = () => String(rint(200000000,599999999));
+    const pad = n => String(n).padStart(6,"0");
+
+    function nextRef(type){
+      const prefix = type === "fatura" ? "FAT" : "CPCV";
+      const nums = window.MOCK_REQUESTS
+        .filter(r => r.ref && r.ref.indexOf(prefix + "-") === 0)
+        .map(r => parseInt(r.ref.split("-").pop(), 10)).filter(n => !isNaN(n));
+      const next = (nums.length ? Math.max(...nums) : 0) + 1;
+      return prefix + "-2026-" + pad(next);
+    }
+    function makeDocs(){
+      const out = [];
+      for(let i = rint(0,3); i > 0; i--){ const d = pick(DOCS); if(!out.some(x => x.name === d[0])) out.push({ name:d[0], size:d[1] }); }
+      return out;
+    }
+    function generate(){
+      const type = Math.random() < 0.5 ? "fatura" : "cpcv";
+      const cons = pick(CONSULTORES);
+      const now = new Date().toISOString();
+      const cidade = pick(CIDADES);
+      const rua = pick(RUAS) + ", " + rint(1,220);
+      let cliente, data;
+      if(type === "fatura"){
+        const nome = Math.random() < 0.5 ? pick(ENTIDADES) : pick(PESSOAS);
+        cliente = nome;
+        data = { tipoAto: pick(["Escritura","CPCV"]), nome, moradaFiscal: rua,
+          localidadeFiscal: cidade[0], cpFiscal: cidade[1], nif: nif(),
+          ami: Math.random() < 0.6 ? ("AMI " + rint(10000,39999)) : "",
+          idpv: "PV-" + rint(60000,99999), valor: (rint(8,35)*1000 + rint(0,999)) + ".00",
+          moradaImovel: rua, localidadeImovel: cidade[0], cpImovel: cidade[1],
+          dataAssinatura: now.slice(0,10) };
+      } else {
+        const vend = Math.random() < 0.5 ? pick(PESSOAS) : pick(ENTIDADES);
+        let comp = pick(PESSOAS); if(comp === vend) comp = pick(PESSOAS);
+        cliente = vend + " ↔ " + comp;
+        const val = rint(120,450) * 1000;
+        const prazo = new Date(); prazo.setMonth(prazo.getMonth() + 2);
+        data = { promitenteVendedor: vend, promitenteComprador: comp, nif: nif(),
+          idpv: "ID-" + rint(20000,69999),
+          imovel: pick(TIPOS_IMOVEL) + " — " + rua + ", " + cidade[0],
+          valorNegocio: val + ".00", sinal: Math.round(val*0.1) + ".00",
+          dataCpcv: now.slice(0,10), prazoEscritura: prazo.toISOString().slice(0,10) };
+      }
+      return { id: "sim-" + Date.now() + "-" + rint(100,999), ref: nextRef(type), type,
+        status: "novo", createdAt: now, consultor: cons, cliente, observacoes: "",
+        data, docs: makeDocs(), drive: "processar", sheet: "processar", driveUrl: "", sheetUrl: "",
+        history: [{ text: "Pedido submetido pelo consultor", at: now, by: cons }] };
+    }
+
+    return {
+      /** regista um callback chamado a cada novo pedido (como um listener Firestore) */
+      onNew(cb){ listeners.push(cb); },
+      /** injeta 1 pedido novo e notifica os listeners */
+      emit(){ const r = generate(); window.MOCK_REQUESTS.unshift(r); listeners.forEach(l => l(r)); return r; },
+      start(ms){ this.stop(); timer = setInterval(() => this.emit(), ms || 7000); },
+      stop(){ if(timer){ clearInterval(timer); timer = null; } },
+      isRunning(){ return !!timer; },
+      /** simula a conclusão da sincronização Drive/Sheets (Firebase → n8n → Google) */
+      progressSync(id, onStep){
+        const r = window.MOCK_REQUESTS.find(x => x.id === id); if(!r) return;
+        setTimeout(() => { r.drive = "criada"; r.driveUrl = "https://drive.google.com/drive/folders/DEMO-" + r.ref;
+          r.history.push({ text: "Pasta criada no Google Drive", at: new Date().toISOString(), by: "Sistema" });
+          if(onStep) onStep(); }, 2600);
+        setTimeout(() => { r.sheet = "criado"; r.sheetUrl = "https://docs.google.com/spreadsheets/d/DEMO/edit";
+          r.history.push({ text: "Registo criado no Google Sheets", at: new Date().toISOString(), by: "Sistema" });
+          if(onStep) onStep(); }, 4200);
+      }
+    };
+  })();
+
+  /* ============================================================
+     3c) SINCRONIZAÇÃO Google Drive + Google Sheets
+     ------------------------------------------------------------
+     • Deixe SYNC_ENDPOINT = "" para usar o MODO SIMULADO.
+     • Para criar mesmo no Google, cole abaixo o URL /exec do seu
+       Web App de Google Apps Script (ver apps-script/Codigo.gs e o
+       README). A página passa a criar pasta + folha reais e a mostrar
+       os URLs devolvidos. A autorização Google é feita por si, no
+       ecrã de consentimento — a página nunca vê as suas credenciais.
+     ============================================================ */
+  window.SYNC_ENDPOINT = "https://script.google.com/macros/s/AKfycbw6rLsMTmdXdKw3-dRw5MN-BxeFSOotbcQfxBMMW24i6zqydemZvpHzzjnt7UtYVLa-7w/exec";
+
+  window.SyncService = (function(){
+    // Persiste sempre via RequestsService.setSync → funciona em modo local E Firebase.
+    const persist = (id, patch) => window.RequestsService.setSync(id, patch);
+    const DONE_HIST = ["Pasta criada no Google Drive", "Registo criado no Google Sheets"];
+    return {
+      isLive(){ return !!(window.SYNC_ENDPOINT && window.SYNC_ENDPOINT.trim()); },
+      /** Cria Drive+Sheets para o pedido; chama onStep() a cada mudança de estado.
+          Real (Apps Script) se SYNC_ENDPOINT definido; caso contrário, simulado. */
+      async sync(id, onStep){
+        const r = await window.RequestsService.getRequestById(id); if(!r) return;
+        await persist(id, { drive:"processar", sheet:"processar" }); if(onStep) onStep();
+
+        if(!this.isLive()){
+          await new Promise(res => setTimeout(res, 2200)); // MODO SIMULADO
+          await persist(id, { drive:"criada", sheet:"criado",
+            driveUrl:"https://drive.google.com/drive/folders/DEMO-" + r.ref,
+            sheetUrl:"https://docs.google.com/spreadsheets/d/DEMO/edit", history: DONE_HIST });
+          if(onStep) onStep();
+          return;
+        }
+
+        try{
+          // Content-Type "text/plain" evita o preflight CORS (pedido simples);
+          // o Apps Script lê o corpo em e.postData.contents e responde JSON.
+          const resp = await fetch(window.SYNC_ENDPOINT.trim(), {
+            method:"POST", redirect:"follow",
+            headers:{ "Content-Type":"text/plain;charset=utf-8" },
+            body: JSON.stringify({ ref:r.ref, type:r.type, consultor:r.consultor,
+              cliente:r.cliente, observacoes:r.observacoes, data:r.data })
+          });
+          const out = await resp.json();
+          if(!out || !out.ok || !out.driveUrl) throw new Error((out && out.error) || "resposta inválida");
+          await persist(id, { drive:"criada", sheet:"criado", driveUrl:out.driveUrl, sheetUrl:out.sheetUrl, history: DONE_HIST });
+        }catch(err){
+          await persist(id, { drive:"erro", sheet:"erro", history:["Erro de sincronização: " + (err.message || err)] });
+        }
+        if(onStep) onStep();
+      }
+    };
+  })();
+
+  /* ============================================================
+     4) COMO MIGRAR PARA FIREBASE (Etapa seguinte)
+     ------------------------------------------------------------
+     • Não é preciso alterar NENHUM componente visual.
+     • Substituir o corpo das funções de RequestsService por chamadas
+       ao Firestore, mantendo a mesma assinatura e os mesmos campos:
+
+         import { getFirestore, collection, getDocs, doc, getDoc,
+                  updateDoc, arrayUnion } from "firebase/firestore";
+         const db = getFirestore(app);
+
+         async getRequests(){
+           const snap = await getDocs(collection(db, "pedidos"));
+           return snap.docs.map(d => ({ id:d.id, ...d.data() }));
+         }
+         async getRequestById(id){
+           const s = await getDoc(doc(db, "pedidos", id));
+           return s.exists() ? ({ id:s.id, ...s.data() }) : null;
+         }
+         async updateRequestStatus(id, status, note){
+           const ref = doc(db, "pedidos", id);
+           await updateDoc(ref, { status,
+             history: arrayUnion({ text: note || status, at: new Date().toISOString(), by:"Coordenação" }) });
+           return this.getRequestById(id);
+         }
+         async addInternalNote(id, text){ ...arrayUnion(...) }
+
+     • A proteção de rota (Firebase Authentication) entra no topo desta
+       página: verificar onAuthStateChanged e, se não houver sessão,
+       redirecionar para o login. O botão "Terminar sessão" chamará signOut().
+     ============================================================ */
+  </script>
+
+  <!-- =======================================================================
+       INTERFACE (só fala com RequestsService)
+       ======================================================================= -->
+  <script>
+  (function(){
+    "use strict";
+
+    // ---- Constantes de apresentação ----
+    const STATUS = {
+      novo:          { label:"Novo",                   cls:"st-novo" },
+      processamento: { label:"Em processamento",       cls:"st-proc" },
+      concluido:     { label:"Concluído",              cls:"st-done" },
+      aguardar:      { label:"A aguardar informação",  cls:"st-wait" }
+    };
+    const TYPE = {
+      fatura: { label:"Fatura", cls:"badge-fatura" },
+      cpcv:   { label:"CPCV",   cls:"badge-cpcv" }
+    };
+
+    // ---- Estado da UI ----
+    let allRequests = [];
+    let currentId = null;
+    let pendingConfirm = null;
+
+    // ---- Utilitários ----
+    const $ = (s, r=document) => r.querySelector(s);
+    const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+    const esc = (s) => String(s==null?"":s).replace(/[&<>"']/g, c => (
+      {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+    const fmtDate = (iso) => { const d=new Date(iso); return isNaN(d)?"—":
+      d.toLocaleDateString("pt-PT",{day:"2-digit",month:"2-digit",year:"numeric"}); };
+    const fmtDateTime = (iso) => { const d=new Date(iso); return isNaN(d)?"—":
+      d.toLocaleString("pt-PT",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}); };
+    const fmtEur = (v) => { const n=Number(v); return isNaN(n)?esc(v):
+      n.toLocaleString("pt-PT",{style:"currency",currency:"EUR"}); };
+
+    const ICON = {
+      folder:'<svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>',
+      doc:'<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>',
+      arrow:'<svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+      check:'<svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>',
+      ext:'<svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg>'
+    };
+
+    // =================== SUMÁRIO ===================
+    function renderSummary(){
+      const by = (s) => allRequests.filter(r => r.status === s).length;
+      $("#stat-novos").textContent = by("novo");
+      $("#stat-proc").textContent  = by("processamento");
+      $("#stat-done").textContent  = by("concluido");
+      $("#stat-total").textContent = allRequests.length;
+    }
+
+    // =================== FILTROS ===================
+    function activeTab(){ return ($("input[name='tab']:checked")||{}).value || "todos"; }
+
+    function getFiltered(){
+      const tab = activeTab();
+      const q = $("#f-search").value.trim().toLowerCase();
+      const est = $("#f-estado").value;
+      const cons = $("#f-consultor").value;
+      const de = $("#f-de").value ? new Date($("#f-de").value+"T00:00:00") : null;
+      const ate = $("#f-ate").value ? new Date($("#f-ate").value+"T23:59:59") : null;
+
+      return allRequests.filter(r => {
+        if(tab !== "todos" && r.type !== tab) return false;
+        if(est && r.status !== est) return false;
+        if(cons && r.consultor !== cons) return false;
+        const d = new Date(r.createdAt);
+        if(de && d < de) return false;
+        if(ate && d > ate) return false;
+        if(q){
+          const hay = [r.ref, r.consultor, r.cliente, r.data && r.data.nif,
+            r.data && r.data.idpv, r.data && r.data.imovel, r.data && r.data.moradaImovel]
+            .filter(Boolean).join(" ").toLowerCase();
+          if(!hay.includes(q)) return false;
+        }
+        return true;
+      });
+    }
+
+    function updateTabCounts(){
+      const c = { todos:allRequests.length,
+        fatura:allRequests.filter(r=>r.type==="fatura").length,
+        cpcv:allRequests.filter(r=>r.type==="cpcv").length };
+      // (contagens discretas junto aos separadores)
+      const map = { "tab-todos":c.todos, "tab-fat":c.fatura, "tab-cpcv":c.cpcv };
+      Object.entries(map).forEach(([id,n])=>{
+        const lbl = $("label[for='"+id+"']");
+        if(lbl && !lbl.querySelector(".count")){ const s=document.createElement("span"); s.className="count"; lbl.appendChild(s); }
+        if(lbl) lbl.querySelector(".count").textContent = n;
+      });
+    }
+
+    // =================== LISTA ===================
+    function docsCell(r){
+      const n = r.docs ? r.docs.length : 0;
+      const synced = r.drive === "criada";
+      const sync = synced
+        ? '<span class="sync ok" title="Google Drive sincronizado">'+ICON.check+'Drive</span>'
+        : '<span class="sync pend" title="Sincronização pendente">Drive pendente</span>';
+      return '<span class="docs-cell">'+ICON.folder+'<span>'+n+'</span>'+sync+'</span>';
+    }
+
+    function renderList(){
+      const rows = getFiltered();
+      $("#result-count").textContent = rows.length +
+        (rows.length === 1 ? " pedido" : " pedidos");
+
+      const tbody = $("#table-body");
+      const cards = $("#cards-list");
+
+      if(rows.length === 0){
+        const empty = '<div class="state"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>'+
+          '<h3>Sem pedidos</h3><p>Não há pedidos que correspondam aos filtros atuais.</p></div>';
+        tbody.innerHTML = '<tr><td colspan="8" style="padding:0">'+empty+'</td></tr>';
+        cards.innerHTML = empty;
+        return;
+      }
+
+      // Tabela (desktop)
+      tbody.innerHTML = rows.map(r => {
+        const t = TYPE[r.type], s = STATUS[r.status];
+        return '<tr tabindex="0" data-id="'+r.id+'" aria-label="Abrir pedido '+esc(r.ref)+'">'+
+          '<td><span class="ref">'+esc(r.ref)+'</span></td>'+
+          '<td><span class="badge '+t.cls+'">'+t.label+'</span></td>'+
+          '<td class="muted">'+fmtDate(r.createdAt)+'</td>'+
+          '<td class="cell-strong">'+esc(r.consultor)+'</td>'+
+          '<td>'+esc(r.cliente)+'</td>'+
+          '<td><span class="badge dot '+s.cls+'">'+s.label+'</span></td>'+
+          '<td>'+docsCell(r)+'</td>'+
+          '<td><span class="row-action">Ver '+ICON.arrow+'</span></td>'+
+        '</tr>';
+      }).join("");
+
+      // Cartões (mobile)
+      cards.innerHTML = rows.map(r => {
+        const t = TYPE[r.type], s = STATUS[r.status];
+        return '<div class="req-card" tabindex="0" data-id="'+r.id+'" aria-label="Abrir pedido '+esc(r.ref)+'">'+
+          '<div class="rc-top"><span class="rc-ref">'+esc(r.ref)+'</span>'+
+            '<span class="badge '+t.cls+'">'+t.label+'</span></div>'+
+          '<div class="rc-row"><span class="rc-label">Consultor</span><span class="cell-strong">'+esc(r.consultor)+'</span></div>'+
+          '<div class="rc-row"><span class="rc-label">Cliente</span><span>'+esc(r.cliente)+'</span></div>'+
+          '<div class="rc-row"><span class="rc-label">Data</span><span class="muted">'+fmtDate(r.createdAt)+'</span></div>'+
+          '<div class="rc-foot"><span class="badge dot '+s.cls+'">'+s.label+'</span>'+docsCell(r)+'</div>'+
+        '</div>';
+      }).join("");
+    }
+
+    function showListLoading(){
+      const sk = Array.from({length:5}).map(()=>'<tr><td colspan="8" style="padding:0"><div class="skeleton-row"></div></td></tr>').join("");
+      $("#table-body").innerHTML = sk;
+      $("#cards-list").innerHTML = Array.from({length:4}).map(()=>'<div class="req-card" style="height:120px"></div>').join("");
+    }
+
+    // =================== DRAWER ===================
+    function badgesHtml(r){
+      const t = TYPE[r.type], s = STATUS[r.status];
+      return '<span class="badge '+t.cls+'">'+t.label+'</span>'+
+             '<span class="badge dot '+s.cls+'">'+s.label+'</span>';
+    }
+
+    function fieldsHtml(r){
+      const item = (k,v) => '<div class="d-item"><span class="k">'+esc(k)+'</span><span class="v">'+(v?esc(v):"—")+'</span></div>';
+      const itemFull = (k,v) => '<div class="d-item full"><span class="k">'+esc(k)+'</span><span class="v">'+(v?esc(v):"—")+'</span></div>';
+      const d = r.data || {};
+      if(r.type === "fatura"){
+        return '<div class="d-grid">'+
+          item("Tipo de ato", d.tipoAto)+
+          item("NIF", d.nif)+
+          itemFull("Nome / entidade", d.nome)+
+          itemFull("Morada fiscal", d.moradaFiscal)+
+          item("Localidade", d.localidadeFiscal)+
+          item("Código postal", d.cpFiscal)+
+          item("AMI", d.ami)+
+          item("ID / PV", d.idpv)+
+          item("Valor sem IVA", d.valor ? fmtEur(d.valor) : "")+
+          item("Data de assinatura", d.dataAssinatura ? fmtDate(d.dataAssinatura+'T00:00:00') : "")+
+          itemFull("Morada do imóvel", d.moradaImovel)+
+          item("Localidade (imóvel)", d.localidadeImovel)+
+          item("Código postal (imóvel)", d.cpImovel)+
+        '</div>';
+      }
+      // CPCV
+      return '<div class="d-grid">'+
+        itemFull("Promitente vendedor", d.promitenteVendedor)+
+        itemFull("Promitente comprador", d.promitenteComprador)+
+        item("NIF", d.nif)+
+        item("ID / PV", d.idpv)+
+        itemFull("Imóvel", d.imovel)+
+        item("Valor do negócio", d.valorNegocio ? fmtEur(d.valorNegocio) : "")+
+        item("Sinal", d.sinal ? fmtEur(d.sinal) : "")+
+        item("Data do CPCV", d.dataCpcv ? fmtDate(d.dataCpcv+'T00:00:00') : "")+
+        item("Prazo p/ escritura", d.prazoEscritura ? fmtDate(d.prazoEscritura+'T00:00:00') : "")+
+      '</div>';
+    }
+
+    function syncActions(r){
+      const done = r.drive === "criada" && r.sheet === "criado";
+      if(done) return "";
+      const modo = SyncService.isLive() ? "criar no Google (real)" : "simular";
+      return '<button class="btn btn-ghost" data-sync-now style="margin-top:12px;width:100%;justify-content:center">'+
+        '<svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>'+
+        'Sincronizar agora — '+modo+'</button>';
+    }
+    function syncBox(kind, status, url){
+      const cfg = {
+        drive: { title:"Google Drive", labels:{criada:"Pasta criada",processar:"A processar",erro:"Erro de sincronização"}, btn:"Abrir pasta no Google Drive" },
+        sheet: { title:"Google Sheets", labels:{criado:"Linha adicionada",processar:"A processar",erro:"Erro de sincronização"}, btn:"Abrir tabela no Google Sheets" }
+      }[kind];
+      const done = (kind==="drive" && status==="criada") || (kind==="sheet" && status==="criado");
+      const proc = status==="processar";
+      const err  = status==="erro";
+      const stCls = done?"ok":(err?"err":"proc");
+      const mark = done ? ICON.check : (proc ? '<span class="spin"></span>' : '!');
+      const icon = kind==="drive"
+        ? '<svg viewBox="0 0 24 24" style="stroke:var(--gold-bright)"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>'
+        : '<svg viewBox="0 0 24 24" style="stroke:var(--green)"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 10h16M10 4v16"/></svg>';
+      let btn = "";
+      if(done && url){ btn = '<a class="btn btn-ghost" href="'+esc(url)+'" target="_blank" rel="noopener">'+ICON.ext+cfg.btn+'</a>'; }
+      return '<div class="sync-box"><div class="sb-head">'+icon+cfg.title+'</div>'+
+        '<div class="sb-status '+stCls+'">'+mark+' '+esc(cfg.labels[status]||status)+'</div>'+btn+'</div>';
+    }
+
+    function docsSection(r){
+      if(!r.docs || r.docs.length === 0){
+        return '<p class="muted" style="font-size:.85rem">Sem documentos anexados.</p>';
+      }
+      return r.docs.map(d => '<div class="doc-line">'+ICON.doc+'<span>'+esc(d.name)+'</span><span class="sz">'+esc(d.size)+'</span></div>').join("");
+    }
+
+    function historyHtml(r){
+      const items = [...r.history].reverse();
+      return '<ul class="timeline">'+items.map(h =>
+        '<li><div class="tl-text">'+esc(h.text)+'</div><div class="tl-meta">'+fmtDateTime(h.at)+' · '+esc(h.by)+'</div></li>'
+      ).join("")+'</ul>';
+    }
+
+    function footActions(r){
+      const btn = (id, cls, label) => '<button class="btn '+cls+'" data-act="'+id+'">'+label+'</button>';
+      let actions = "";
+      if(r.status !== "processamento" && r.status !== "concluido") actions += btn("processamento","btn-primary","Iniciar processamento");
+      if(r.status !== "aguardar")   actions += btn("aguardar","btn-gold","Aguardar informação");
+      if(r.status !== "concluido")  actions += btn("concluido","btn-green","Marcar como concluído");
+      return '<div class="actions">'+actions+'</div>'+
+        '<div style="margin-top:12px"><textarea id="note-input" placeholder="Adicionar uma nota interna…" aria-label="Nota interna"></textarea>'+
+        '<button class="btn btn-ghost" id="note-add" style="margin-top:8px;width:100%;justify-content:center">Adicionar nota</button></div>';
+    }
+
+    function renderDrawer(r){
+      currentId = r.id;
+      $("#drawer-ref").textContent = r.ref;
+      $("#drawer-badges").innerHTML = badgesHtml(r);
+      $("#drawer-body").innerHTML =
+        '<div class="d-section"><div class="d-title">Pedido</div>'+
+          '<div class="d-grid">'+
+            '<div class="d-item"><span class="k">Data e hora</span><span class="v">'+fmtDateTime(r.createdAt)+'</span></div>'+
+            '<div class="d-item"><span class="k">Consultor</span><span class="v">'+esc(r.consultor)+'</span></div>'+
+            '<div class="d-item full"><span class="k">Cliente / Entidade</span><span class="v">'+esc(r.cliente)+'</span></div>'+
+            (r.observacoes ? '<div class="d-item full"><span class="k">Observações</span><span class="v">'+esc(r.observacoes)+'</span></div>' : '')+
+          '</div>'+
+        '</div>'+
+        '<div class="d-section"><div class="d-title">Dados submetidos</div>'+fieldsHtml(r)+'</div>'+
+        '<div class="d-section"><div class="d-title">Sincronização</div>'+
+          '<div class="sync-grid">'+syncBox("drive", r.drive, r.driveUrl)+syncBox("sheet", r.sheet, r.sheetUrl)+'</div>'+syncActions(r)+'</div>'+
+        '<div class="d-section"><div class="d-title">Documentos</div>'+docsSection(r)+'</div>'+
+        '<div class="d-section"><div class="d-title">Histórico de alterações</div>'+historyHtml(r)+'</div>';
+      $("#drawer-foot").innerHTML = footActions(r);
+    }
+
+    async function openDrawer(id){
+      const r = await RequestsService.getRequestById(id);
+      if(!r) return;
+      renderDrawer(r);
+      $("#drawer-overlay").classList.add("open");
+      $("#drawer").classList.add("open");
+      $("#drawer").setAttribute("aria-hidden","false");
+      document.body.style.overflow = "hidden";
+      $("#drawer-close").focus();
+    }
+    function closeDrawer(){
+      $("#drawer-overlay").classList.remove("open");
+      $("#drawer").classList.remove("open");
+      $("#drawer").setAttribute("aria-hidden","true");
+      document.body.style.overflow = "";
+      currentId = null;
+    }
+
+    // =================== AÇÕES ===================
+    async function applyStatus(id, status){
+      const note = ($("#note-input") && $("#note-input").value.trim()) || "";
+      await RequestsService.updateRequestStatus(id, status, note);
+      allRequests = await RequestsService.getRequests(); // ressincroniza estado local
+      renderSummary(); updateTabCounts(); renderList();
+      const fresh = await RequestsService.getRequestById(id);
+      if(fresh) renderDrawer(fresh);            // mantém o painel aberto, coerente
+      toast(STATUS[status].label === "Concluído" ? "Pedido concluído com sucesso" : "Estado atualizado: "+STATUS[status].label);
+    }
+
+    function requestConclude(id){
+      pendingConfirm = () => applyStatus(id, "concluido");
+      $("#confirm-overlay").classList.add("open");
+      $("#confirm-ok").focus();
+    }
+
+    async function addNote(id){
+      const el = $("#note-input"); const text = el.value.trim();
+      if(!text){ el.focus(); return; }
+      await RequestsService.addInternalNote(id, text);
+      const fresh = await RequestsService.getRequestById(id);
+      if(fresh) renderDrawer(fresh);
+      toast("Nota interna adicionada");
+    }
+
+    // =================== TOAST ===================
+    function toast(msg){
+      const el = document.createElement("div");
+      el.className = "toast ok";
+      el.innerHTML = ICON.check+'<span>'+esc(msg)+'</span>';
+      $("#toast-wrap").appendChild(el);
+      setTimeout(()=>{ el.style.transition="opacity .3s"; el.style.opacity="0"; setTimeout(()=>el.remove(),300); }, 2600);
+    }
+
+    // =================== POPULAR CONSULTORES ===================
+    function populateConsultores(){
+      const cur = $("#f-consultor").value;
+      const names = [...new Set(allRequests.map(r=>r.consultor))].sort((a,b)=>a.localeCompare(b,"pt"));
+      $("#f-consultor").innerHTML = '<option value="">Todos os consultores</option>' +
+        names.map(n => '<option value="'+esc(n)+'">'+esc(n)+'</option>').join("");
+      if(cur && names.includes(cur)) $("#f-consultor").value = cur;
+    }
+
+    // =================== ENTRADA DE PEDIDOS (simulação) ===================
+    async function handleIncoming(r){
+      // o simulador já inseriu o pedido em MOCK_REQUESTS; ressincroniza via serviço
+      allRequests = await RequestsService.getRequests();
+      populateConsultores();
+      renderSummary(); updateTabCounts(); renderList();
+      flashRow(r.id);
+      toast("Novo pedido recebido · " + r.ref);
+      // Modo local: a sincronização conclui ao vivo (demonstração).
+      // Modo Firebase: a pasta é criada na submissão / com "Sincronizar agora", não aqui.
+      if(window.COORD_MODE !== "firebase"){
+        SyncService.sync(r.id, async () => {
+          allRequests = await RequestsService.getRequests();
+          renderList();
+          if(currentId === r.id){ const fresh = await RequestsService.getRequestById(r.id); if(fresh) renderDrawer(fresh); }
+        });
+      }
+    }
+
+    // ---- Ganchos usados pela camada Firebase (tempo real) ----
+    window.CoordUI = {
+      async setAll(list){ allRequests = list.slice(); populateConsultores(); renderSummary(); updateTabCounts(); renderList(); },
+      notifyNew(r){ flashRow(r.id); toast("Novo pedido recebido · " + r.ref); },
+      refreshOpenDrawer(){ if(currentId){ const f = allRequests.find(x => x.id === currentId); if(f) renderDrawer(f); } },
+      currentId(){ return currentId; }
+    };
+
+    // sincronização manual (botão no detalhe) — ideal para testar o Google
+    async function doManualSync(){
+      const id = currentId; if(!id) return;
+      toast(SyncService.isLive() ? "A criar no Google Drive/Sheets…" : "A sincronizar (simulado)…");
+      await SyncService.sync(id, async () => {
+        allRequests = await RequestsService.getRequests();
+        renderList();
+        if(currentId === id){ const fresh = await RequestsService.getRequestById(id); if(fresh) renderDrawer(fresh); }
+      });
+      const fresh = await RequestsService.getRequestById(id);
+      if(fresh) toast(fresh.drive === "erro" ? "Erro de sincronização — ver histórico" : "Sincronização concluída");
+    }
+    function flashRow(id){
+      const targets = [ $("#table-body tr[data-id='"+id+"']"), $("#cards-list .req-card[data-id='"+id+"']") ];
+      targets.forEach(el => { if(el){ el.classList.remove("flash-new"); void el.offsetWidth; el.classList.add("flash-new"); } });
+      const first = targets.find(Boolean);
+      if(first && first.scrollIntoView) first.scrollIntoView({ block:"nearest", behavior:"smooth" });
+    }
+
+    // =================== EVENTOS ===================
+    function bind(){
+      $$("input[name='tab']").forEach(el => el.addEventListener("change", renderList));
+      ["#f-search","#f-estado","#f-consultor","#f-de","#f-ate"].forEach(s =>
+        $(s).addEventListener("input", renderList));
+      $("#clear-filters").addEventListener("click", () => {
+        $("#f-search").value=""; $("#f-estado").value=""; $("#f-consultor").value="";
+        $("#f-de").value=""; $("#f-ate").value=""; renderList();
+      });
+
+      // Filtros recolhíveis (mobile)
+      $("#filters-toggle").addEventListener("click", () => {
+        const t = $("#filters-toggle"); const open = t.getAttribute("aria-expanded")==="true";
+        t.setAttribute("aria-expanded", String(!open));
+        $("#filters").classList.toggle("open", !open);
+      });
+
+      // Abrir detalhe (delegação) — tabela e cartões
+      function rowHandler(e){
+        const el = e.target.closest("[data-id]"); if(!el) return;
+        if(e.type === "keydown" && e.key !== "Enter" && e.key !== " ") return;
+        if(e.type === "keydown") e.preventDefault();
+        openDrawer(el.getAttribute("data-id"));
+      }
+      $("#table-body").addEventListener("click", rowHandler);
+      $("#table-body").addEventListener("keydown", rowHandler);
+      $("#cards-list").addEventListener("click", rowHandler);
+      $("#cards-list").addEventListener("keydown", rowHandler);
+
+      // Ações do drawer (delegação)
+      $("#drawer-foot").addEventListener("click", (e) => {
+        const b = e.target.closest("[data-act]");
+        if(b){ const act = b.getAttribute("data-act");
+          if(act === "concluido") requestConclude(currentId);
+          else applyStatus(currentId, act);
+          return; }
+        if(e.target.closest("#note-add")) addNote(currentId);
+      });
+
+      // Sincronização manual (secção Sincronização do detalhe)
+      $("#drawer-body").addEventListener("click", (e) => {
+        if(e.target.closest("[data-sync-now]")) doManualSync();
+      });
+
+      // Fechar drawer
+      $("#drawer-close").addEventListener("click", closeDrawer);
+      $("#drawer-overlay").addEventListener("click", closeDrawer);
+      document.addEventListener("keydown", (e) => {
+        if(e.key === "Escape"){
+          if($("#confirm-overlay").classList.contains("open")) closeConfirm();
+          else if($("#drawer").classList.contains("open")) closeDrawer();
+        }
+      });
+
+      // Confirmação
+      $("#confirm-cancel").addEventListener("click", closeConfirm);
+      $("#confirm-overlay").addEventListener("click", (e)=>{ if(e.target === $("#confirm-overlay")) closeConfirm(); });
+      $("#confirm-ok").addEventListener("click", () => { const fn=pendingConfirm; closeConfirm(); if(fn) fn(); });
+
+      // Terminar sessão
+      $("#logout-btn").addEventListener("click", () => {
+        if(window.COORD_MODE === "firebase" && window.CoordAuth){ window.CoordAuth.logout(); }
+        else toast("Sessão terminada (demonstração)");
+      });
+
+      // Simulação de entrada de pedidos (demonstração)
+      $("#sim-one").addEventListener("click", () => RequestsSimulator.emit());
+      $("#sim-live").addEventListener("change", (e) => {
+        if(e.target.checked){ RequestsSimulator.start(7000); toast("Simulação automática ligada"); }
+        else { RequestsSimulator.stop(); toast("Simulação automática desligada"); }
+      });
+    }
+    function closeConfirm(){ $("#confirm-overlay").classList.remove("open"); pendingConfirm = null; }
+
+    // =================== ARRANQUE ===================
+    async function init(){
+      bind();
+      // Em modo Firebase, os dados chegam via tempo real depois do login (ver módulo no fim).
+      if(window.COORD_MODE === "firebase"){
+        showListLoading();
+        RequestsSimulator.onNew(handleIncoming);
+        return;
+      }
+      showListLoading();
+      try{
+        allRequests = await RequestsService.getRequests();
+        populateConsultores();
+        renderSummary();
+        updateTabCounts();
+        renderList();
+        RequestsSimulator.onNew(handleIncoming); // liga a "entrada de pedidos" (substituir por onSnapshot com Firebase)
+      }catch(err){
+        $("#table-body").innerHTML = '<tr><td colspan="8" style="padding:0">'+
+          '<div class="state"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>'+
+          '<h3>Erro ao carregar</h3><p>Não foi possível obter os pedidos. Tente novamente.</p></div></td></tr>';
+        console.error(err);
+      }
+    }
+    document.addEventListener("DOMContentLoaded", init);
+  })();
+  </script>
+
+  <!-- =======================================================================
+       MÓDULO FIREBASE — só ativa se window.FIREBASE_CONFIG estiver preenchido.
+       Login (Auth) + leitura em tempo real (Firestore onSnapshot) + gravação de
+       estados/notas/histórico. "+ Simular pedido" grava um pedido de teste no
+       Firestore (para veres o tempo real já). Substitui a camada local acima.
+       ======================================================================= -->
+  <script type="module">
+    if (window.COORD_MODE === "firebase") {
+      const V = "https://www.gstatic.com/firebasejs/11.1.0/";
+      try {
+        const { initializeApp } = await import(V + "firebase-app.js");
+        const { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } = await import(V + "firebase-auth.js");
+        const { getFirestore, collection, addDoc, doc, updateDoc, onSnapshot, query, orderBy, arrayUnion } = await import(V + "firebase-firestore.js");
+
+        const app = initializeApp(window.FIREBASE_CONFIG);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const COL = "pedidos";
+
+        // ---------- cache local (fonte dos componentes visuais) ----------
+        let _cache = [];
+        const byId = (id) => _cache.find(x => x.id === id) || null;
+        const clone = (o) => JSON.parse(JSON.stringify(o));
+
+        // ---------- RequestsService (Firestore) — mesma assinatura da versão local ----------
+        window.RequestsService = {
+          async getRequests(){ return clone(_cache); },
+          async getRequestById(id){ const r = byId(id); return r ? clone(r) : null; },
+          async updateRequestStatus(id, status, note){
+            const labels = { novo:"Reaberto como Novo", processamento:"Processamento iniciado",
+              concluido:"Pedido concluído", aguardar:"Marcado como: a aguardar informação" };
+            const entry = { text:(note && note.trim()) ? note.trim() : labels[status], at:new Date().toISOString(), by:"Coordenação" };
+            await updateDoc(doc(db, COL, id), { status, history: arrayUnion(entry) });
+            const r = byId(id); if(r){ r.status = status; (r.history = r.history || []).push(entry); }
+            return r ? clone(r) : null;
+          },
+          async addInternalNote(id, text){
+            const entry = { text:"Nota interna: " + text.trim(), at:new Date().toISOString(), by:"Coordenação" };
+            await updateDoc(doc(db, COL, id), { history: arrayUnion(entry) });
+            const r = byId(id); if(r){ (r.history = r.history || []).push(entry); }
+            return r ? clone(r) : null;
+          },
+          async setSync(id, patch){
+            const now = new Date().toISOString(); const upd = {};
+            if(patch.drive) upd.drive = patch.drive;
+            if(patch.sheet) upd.sheet = patch.sheet;
+            if(patch.driveUrl !== undefined) upd.driveUrl = patch.driveUrl;
+            if(patch.sheetUrl !== undefined) upd.sheetUrl = patch.sheetUrl;
+            const hist = (patch.history || []).map(t => ({ text:t, at:now, by:"Sistema" }));
+            if(hist.length) upd.history = arrayUnion(...hist);
+            await updateDoc(doc(db, COL, id), upd);
+            const r = byId(id);
+            if(r){ if(upd.drive) r.drive = upd.drive; if(upd.sheet) r.sheet = upd.sheet;
+              if(upd.driveUrl !== undefined) r.driveUrl = upd.driveUrl; if(upd.sheetUrl !== undefined) r.sheetUrl = upd.sheetUrl;
+              (r.history = r.history || []).push(...hist); }
+            return r ? clone(r) : null;
+          }
+        };
+
+        // ---------- Gerador de pedido de teste (para "+ Simular pedido") ----------
+        const CONS=["Ana Marques","João Ferreira","Rita Lopes","Miguel Andrade","Sofia Cardoso"];
+        const ENT=["Imobiliária Sol Nascente, Lda.","Green Homes, Lda.","Construções Aurora, S.A."];
+        const PES=["Carla Teixeira","Tiago Nunes","Beatriz Antunes","Nuno Dias","Sofia Ramos","Pedro Costa"];
+        const CID=[["Lisboa","1200-192"],["Porto","4000-001"],["Coimbra","3000-215"],["Braga","4700-320"]];
+        const IMO=["Apartamento T2","Moradia T3","Loja comercial","Apartamento T1"];
+        const RUA=["Rua das Flores","Av. Central","Rua Direita","Rua do Comércio"];
+        const pick=a=>a[Math.floor(Math.random()*a.length)], rint=(a,b)=>Math.floor(a+Math.random()*(b-a+1));
+        const pad=n=>String(n).padStart(6,"0"), nif=()=>String(rint(200000000,599999999));
+        function nextRef(type){
+          const p = type==="fatura" ? "FAT" : "CPCV";
+          const nums = _cache.filter(r=>r.ref && r.ref.indexOf(p+"-")===0).map(r=>parseInt(r.ref.split("-").pop(),10)).filter(n=>!isNaN(n));
+          return p + "-2026-" + pad((nums.length?Math.max(...nums):0)+1);
+        }
+        function genPedido(){
+          const type = Math.random()<0.5 ? "fatura" : "cpcv";
+          const cons = pick(CONS), now = new Date().toISOString(), c = pick(CID), rua = pick(RUA)+", "+rint(1,200);
+          let cliente, data;
+          if(type==="fatura"){ const nome = Math.random()<0.5?pick(ENT):pick(PES); cliente=nome;
+            data={ tipoAto:pick(["Escritura","CPCV"]), nome, moradaFiscal:rua, localidadeFiscal:c[0], cpFiscal:c[1], nif:nif(),
+              ami:"AMI "+rint(10000,39999), idpv:"PV-"+rint(60000,99999), valor:(rint(8,35)*1000)+".00",
+              moradaImovel:rua, localidadeImovel:c[0], cpImovel:c[1], dataAssinatura:now.slice(0,10) }; }
+          else { const v=pick(PES); let comp=pick(PES); if(comp===v) comp=pick(PES); cliente=v+" ↔ "+comp;
+            const val=rint(120,450)*1000; const pz=new Date(); pz.setMonth(pz.getMonth()+2);
+            data={ promitenteVendedor:v, promitenteComprador:comp, nif:nif(), idpv:"ID-"+rint(20000,69999),
+              imovel:pick(IMO)+" — "+rua+", "+c[0], valorNegocio:val+".00", sinal:Math.round(val*0.1)+".00",
+              dataCpcv:now.slice(0,10), prazoEscritura:pz.toISOString().slice(0,10) }; }
+          return { ref:nextRef(type), type, status:"novo", createdAt:now, consultor:cons, cliente, observacoes:"",
+            data, docs:[], drive:"processar", sheet:"processar", driveUrl:"", sheetUrl:"",
+            history:[{ text:"Pedido submetido pelo consultor", at:now, by:cons }] };
+        }
+
+        // ---------- RequestsSimulator → grava no Firestore ----------
+        let _timer=null;
+        window.RequestsSimulator = {
+          onNew(){ /* em Firebase, a entrada é conduzida pelo onSnapshot */ },
+          async emit(){ try{ await addDoc(collection(db, COL), genPedido()); }catch(e){ console.error(e); } },
+          start(ms){ this.stop(); _timer=setInterval(()=>this.emit(), ms||7000); },
+          stop(){ if(_timer){ clearInterval(_timer); _timer=null; } },
+          isRunning(){ return !!_timer; }
+        };
+
+        // ---------- Portão de sessão + tempo real ----------
+        const gate = document.getElementById("auth-gate");
+        const checking = document.getElementById("gate-checking");
+        const form = document.getElementById("gate-form");
+        const errBox = document.getElementById("gate-error");
+        const appLogo = document.querySelector(".appbar .logo");
+        const gateLogo = document.getElementById("gate-logo");
+        if(gateLogo && appLogo) gateLogo.src = appLogo.getAttribute("src");
+
+        const showLogin = () => { document.documentElement.setAttribute("data-auth","login"); checking.hidden=true; form.hidden=false; };
+        const showApp   = () => { document.documentElement.setAttribute("data-auth","in"); };
+
+        window.CoordAuth = { logout(){ signOut(auth); } };
+
+        let _unsub=null, _loaded=false;
+        function startSnapshot(){
+          _loaded=false;
+          const q = query(collection(db, COL), orderBy("createdAt","desc"));
+          _unsub = onSnapshot(q, (snap)=>{
+            const docs = snap.docs.map(d => Object.assign({ id:d.id }, d.data()));
+            const added = snap.docChanges().filter(c=>c.type==="added").map(c=>c.doc.id);
+            _cache = docs;
+            const first = !_loaded; _loaded = true;
+            window.CoordUI.setAll(docs);
+            if(!first){ added.forEach(id => { const r = docs.find(x=>x.id===id); if(r) window.CoordUI.notifyNew(r); }); }
+            window.CoordUI.refreshOpenDrawer();
+          }, (err)=>{ console.error("onSnapshot", err); });
+        }
+        function stopSnapshot(){ if(_unsub){ _unsub(); _unsub=null; } _cache=[]; }
+
+        form.addEventListener("submit", async (e)=>{
+          e.preventDefault(); errBox.textContent="";
+          const btn = document.getElementById("gate-submit"); btn.disabled=true;
+          try{
+            await signInWithEmailAndPassword(auth, document.getElementById("gate-email").value.trim(), document.getElementById("gate-pass").value);
+          }catch(err){
+            const code = err && err.code;
+            errBox.textContent =
+              (code==="auth/invalid-credential"||code==="auth/wrong-password"||code==="auth/user-not-found") ? "Email ou palavra-passe incorretos." :
+              (code==="auth/invalid-email") ? "Email inválido." :
+              (code==="auth/too-many-requests") ? "Demasiadas tentativas. Tente mais tarde." :
+              "Não foi possível iniciar sessão.";
+          }finally{ btn.disabled=false; }
+        });
+
+        onAuthStateChanged(auth, (user)=>{
+          if(user){
+            const email = user.email || "Coordenação";
+            const nm = document.getElementById("coord-name"); if(nm) nm.textContent = email;
+            const ini = document.getElementById("coord-initials");
+            if(ini) ini.textContent = ((email[0]||"C") + (email.split("@")[0][1]||"")).toUpperCase();
+            const p = document.getElementById("gate-pass"); if(p) p.value = "";
+            showApp(); startSnapshot();
+          } else {
+            stopSnapshot();
+            if(window.CoordUI) window.CoordUI.setAll([]);
+            showLogin();
+          }
+        });
+      } catch (e) {
+        console.error("Falha ao iniciar o Firebase:", e);
+        const c = document.getElementById("gate-checking");
+        if(c) c.textContent = "Erro ao ligar ao Firebase. Verifique a ligação à internet e a configuração.";
+      }
+    }
+  </script>
+</body>
+</html>
